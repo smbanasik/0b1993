@@ -1,17 +1,20 @@
+// Spencer Banasik
 import React, {useEffect, useState} from 'react';
 import logo from './logo.svg';
 import './App.css';
+
+import { PrefillBox, PrefillBoxProps, Edge, Form, Node } from './components/prefillBox';
 
 interface FormData {
   $schema: string,
   branches: Array<object>,
   category: string,
   description: string,
-  edges: Array<object>,
-  forms: Array<object>,
+  edges: Array<Edge>,
+  forms: Array<Form>,
   id: string,
   name: string,
-  nodes: Array<object>,
+  nodes: Array<Node>,
   tenant_id: string,
   triggers: Array<object>,
 }
@@ -19,6 +22,7 @@ interface FormData {
 function App() {
   const [formData, setFormData] = useState<FormData | null>(null);
   const [loading, setLoading] = useState(true);
+  let prefillProps: PrefillBoxProps = {edges: [], nodes: []};
   
   useEffect(() => {
     async function getFormData() {
@@ -33,9 +37,12 @@ function App() {
       + "/graph";
 
       const response = await fetch(url, {method: 'GET'});
+      if(response.status === 200) {
       const data: FormData = await response.json();
+      console.log(data);
       setFormData(data);
       setLoading(false);
+      }
     }
 
     getFormData();
@@ -45,7 +52,7 @@ function App() {
     if(!formData) {
       console.log("Form data not found!");
     } else {
-      console.log(formData);
+      prefillProps = {edges: formData.edges, nodes: formData.nodes};
     }
   }
 
@@ -65,7 +72,8 @@ function App() {
           Learn React
           
         </a>
-        {loading ? (<p>Loading...</p>) : (<p>{formData?.$schema}</p>)}
+        {loading? (<p>Loading...</p>) 
+        : (<PrefillBox edges={prefillProps.edges}nodes={prefillProps.nodes}/>)}
       </header>
     </div>
   );
