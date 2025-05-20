@@ -3,6 +3,7 @@
 // This box is to recieve the forms and edges to manage the
 // prefill viewing and editing
 import React, {useEffect, useState} from 'react';
+import { ViewBox } from './viewBox';
 
 export interface Edge {
     source: string,
@@ -18,8 +19,22 @@ export interface Form {
     ui_schema: object
 }
 
+export interface NodeData {
+    approval_required: boolean,
+    approval_roles: Array<object>,
+    component_id: string,
+    component_key: string,
+    component_type: string,
+    id: string,
+    input_mapping: object,
+    name: string,
+    permitted_roles: Array<object>
+    prerequisites: Array<string>
+    sla_duration: object
+}
+
 export interface Node {
-    data: object,
+    data: NodeData,
     id: string,
     position: object,
     type:string
@@ -30,22 +45,19 @@ export interface PrefillBoxProps {
     nodes: Array<Node>
 }
 
-// We now want to display the forms for each data.
-// Ideally we should have some sort of drop down so we can view the forms!
+// TODO:
+// PrefillBox will have: a view box, and an edit box
+// The view box will have: a drop down to select forms, a list of mappings
+// a way to clear a mapping, and a way to select a piece of data for the edit box
+
+// The form should only be able to prefill based on chains above it, for any form we need to traverse the DAG.
+
 
 export function PrefillBox({edges, nodes}: PrefillBoxProps) {
 
-    const formItems = nodes.map(node => 
-    <React.Fragment>
-        <h1>{node.type}</h1>
-        <ul>
-            <li>{node.id}</li>
-        </ul>
-        </React.Fragment>)
-
     return(
         <div>
-            {formItems}
+            <ViewBox nodes={nodes}/>
         </div>
     );
 }
