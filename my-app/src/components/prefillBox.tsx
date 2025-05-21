@@ -4,6 +4,7 @@
 // prefill viewing and editing
 import React, {useEffect, useState} from 'react';
 import { ViewBox } from './viewBox';
+import styles from './prefill.module.css'
 
 export interface Edge {
     source: string,
@@ -83,10 +84,11 @@ export function PrefillBox({edges, nodes}: PrefillBoxProps) {
 
 
     const [formMappings, setFormMappings] = useState<Array<FormMapping>>();
+    const [isView, setIsView] = useState<boolean>(true);
 
     return(
-        <div>
-            <ViewBox nodes={nodes}/>
+        <div className={styles.prefillBox}>
+            {isView ? <ViewBox nodes={nodes}/> : <p>I'm the edit box!</p>}
         </div>
     );
 }

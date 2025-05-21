@@ -21,17 +21,24 @@ interface FormSelectorProps {
 function DataDisplay({node}: NodeDisplayProps) {
 
     // Given a node, output its form contents as text boxes and a button next to it
+    const nodeEntries = Object.entries(node);
+
+    // TODO: button needs callback to clear mappings
+    const prefillItems = nodeEntries.map(entry=> 
+        <label className={styles.prefillEntry}>
+            <div className={styles.prefillEntryBox}
+                onClick={() =>console.log("IVE BEEN CLICKED" + entry[0])}>
+                {entry[0]}: 
+            </div>
+            <button>X</button>
+        </label>
+    )
 
     // TODO: need double click on text area and that event to have a callback function
     return (
-        <div className={styles.prefillEntry}>
-            <label>
-                approval_required:
-            <textarea 
-                name="prefillContent"
-            />
-            </label>
-            <button>X</button>
+        <div>
+            Now editing form {node.name}
+            {prefillItems}
         </div>
     )
 }

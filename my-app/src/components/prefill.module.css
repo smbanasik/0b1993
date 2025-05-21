@@ -2,5 +2,25 @@
     display: flex;
     align-items: center;
     resize: none;
-    
+}
+
+.prefillEntryBox {
+    font-size: medium;
+    text-align: left;
+    background-color: #709775;
+    color: white;
+    border: 2px solid #111D13;
+    border-radius: 5px;
+    padding: 5px 50px 5px 5px;
+    width: 450px;
+}
+
+
+.prefillBox {
+    font-size: large;
+    background-color: #415D43;
+    color: white;
+    border: 3px solid #111D13;
+    padding: 5px 5px 5px 5px;
+    margin: 20px 20px 40px 20px;
 }
