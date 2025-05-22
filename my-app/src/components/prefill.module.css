@@ -1,3 +1,14 @@
+/*Pallette: 
+Borders: 2F2235
+Hover: 3F3244
+Background: 60495A
+Background 2: 8b8d8b
+BFC3BA
+Text: white
+*/
+
+
+
 .prefillEntry {
     display: flex;
     align-items: center;
@@ -7,20 +18,24 @@
 .prefillEntryBox {
     font-size: medium;
     text-align: left;
-    background-color: #709775;
+    background-color: #8b8d8b;
     color: white;
-    border: 2px solid #111D13;
+    border: 2px solid #2F2235;
     border-radius: 5px;
     padding: 5px 50px 5px 5px;
     width: 450px;
 }
 
+.prefillEntryBox:hover {
+    background-color: #3F3244;
+}
+
 
 .prefillBox {
     font-size: large;
-    background-color: #415D43;
+    background-color: #60495A;
     color: white;
-    border: 3px solid #111D13;
+    border: 3px solid #2F2235;
     padding: 5px 5px 5px 5px;
     margin: 20px 20px 40px 20px;
 }

@@ -46,19 +46,23 @@ export interface PrefillBoxProps {
     nodes: Array<Node>
 }
 
-interface FormMapping {
-    formID: string,
-    mApprovalRequired: string,
-    mApprovalRoles: string,
-    mComponentID: string,
-    mComponentKey: string,
-    mComponentType: string,
-    mID: string,
-    mInputMapping: string,
-    mName: string,
-    mPermittedRoles: string,
-    mPrerequisites: string,
-    mSLADuration: string,
+export class FormMapping {
+
+    constructor(ID:string) {
+        this.formID = ID;
+    }
+    formID: string = "";
+    approval_required?: string = "";
+    approval_roles?: string = "";
+    component_id?: string = "";
+    component_key?: string = "";
+    component_type?: string = "";
+    id?: string = "";
+    input_mapping?: string = "";
+    name?: string = "";
+    permitted_roles?: string = "";
+    prerequisites?: string = "";
+    sla_duration?: string = "";
 }
 // TODO:
 // PrefillBox will have: a view box, and an edit box
@@ -72,21 +76,55 @@ interface FormMapping {
 
 export function PrefillBox({edges, nodes}: PrefillBoxProps) {
 
-    const [formMappings, setFormMappings] = useState<Array<FormMapping>>();
+    const [formMappings, setFormMappings] = useState<Array<FormMapping>>([]);
     const [isView, setIsView] = useState<boolean>(true);
 
+    if(formMappings.length === 0) {
+
+        const initMappings = nodes.map((node, i) => 
+            ({
+                formID: node.id,
+                id: "Test " + i
+            }));
+        setFormMappings(prev => [...prev, ...initMappings]);
+    }
+
     function handleNewMapping(formID: string, entry: string, clearMapping: boolean) {
+
+        const nodeMapping = formMappings.find(form => form.formID === formID);
+
+        if(nodeMapping == null) {
+            throw new Error("Could not find form requested by premapping view box!");
+        }
+
+        let mappingEntries = Object.entries(nodeMapping);
+        
+        // With the entry found for our mapping data, we want to mutate this data
+        // and either clear it or call the editBox with the form
+
         if(clearMapping) {
-            console.log("Clearing mapping entry " + entry + " for form " + formID);
+            mappingEntries.forEach(element => {
+                if(element[0] === entry) {
+                    element[1] = "";
+                }
+            });
         } else {
-            console.log("Adding mapping entry " + entry + " for form " + formID);
+            setIsView(false);
         }
 
     }
 
+    function handleNewMappingComplete() {
+        setIsView(true);
+    }
+
     return(
         <div className={styles.prefillBox}>
-            {isView ? <ViewBox nodes={nodes} handleNewMapping={handleNewMapping}/>
+            {isView ? <ViewBox 
+            nodes={nodes} 
+            handleNewMapping={handleNewMapping}
+            mappings={formMappings}
+            />
             : <p>I'm the edit box!</p>}
         </div>
     );

@@ -2,9 +2,12 @@ import { Node, NodeData } from "./prefillBox"
 import React, {useEffect, useState} from 'react';
 import styles from './prefill.module.css'
 
+import {FormMapping} from './prefillBox'
+
 interface ViewBoxProps {
     nodes: Array<Node>
     handleNewMapping: Function
+    mappings: Array<FormMapping>
 }
 interface FormSelectorProps {
     nodes: Array<NodeData>,
@@ -13,6 +16,7 @@ interface FormSelectorProps {
 
 interface NodeDisplayProps {
     node: NodeData,
+    mapping: FormMapping,
     clearMapFunction: Function,
     addMapFunction: Function,
 }
@@ -20,14 +24,13 @@ interface NodeDisplayProps {
 // Have a drop down to select which form to display
 function FormSelector({nodes, sendSelectedNode}: FormSelectorProps) {
     
-    const options = nodes.map(node => <option value={node.component_key}>{node.name}</option>)
+    const options = nodes.map(node => <option value={node.component_key} key={node.component_key}>{node.name}</option>)
     
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         const form = e.currentTarget;
         const formData = new FormData(form);
         const formJson = Object.fromEntries(formData.entries());
-        console.log(formJson.selectedForm);
 
         const foundElement = nodes.find(node => formJson.selectedForm === node.component_key);
         sendSelectedNode(foundElement);
@@ -50,25 +53,32 @@ function FormSelector({nodes, sendSelectedNode}: FormSelectorProps) {
 
 // Return a list of text boxes with node data, as well as buttons
 // https://react.dev/reference/react-dom/components/textarea#controlling-a-text-area-with-a-state-variable
-function DataDisplay({node, clearMapFunction, addMapFunction}: NodeDisplayProps) {
+function DataDisplay({node, mapping, clearMapFunction, addMapFunction}: NodeDisplayProps) {
 
     // Given a node, output its form contents as text boxes and a button next to it
     const nodeEntries = Object.entries(node);
+    const mappingEntries = Object.entries(mapping);
 
-    const prefillItems = nodeEntries.map(entry=> 
+    const prefillItems = nodeEntries.map(entry=> {
+
+        const associatedEntry = mappingEntries.find(mEntry => mEntry[0] === entry[0]);
+
+        return (
         <div className={styles.prefillEntry} key={entry[0]}>
             <label className={styles.prefillEntryBox}
                 onClick={e => {
                     e.stopPropagation();
                     addMapFunction(entry[0])
                 }}>
-                {entry[0]}: 
+                {entry[0]}: {associatedEntry?.[1]}
             </label>
             <button onClick={e => {
                 e.stopPropagation();
                 clearMapFunction(entry[0])
             }}>X</button>
         </div>
+        )
+    }
     )
     return (
         <div>
@@ -79,16 +89,24 @@ function DataDisplay({node, clearMapFunction, addMapFunction}: NodeDisplayProps)
 }
 
 // Have a drop down to select different forms for the data display
-export function ViewBox({nodes, handleNewMapping}: ViewBoxProps) {
+export function ViewBox({nodes, handleNewMapping, mappings}: ViewBoxProps) {
     
     // For every node, access their data and extract their name
     const nodeData = nodes.map(node =>
         node.data
     )
     const [selectedNode, setSelectedNode] = useState<NodeData>(nodes[0].data);
+    const [selectedMapping, setSelectedMapping] = useState<FormMapping>(mappings[0]);
 
-    function handleSelectedNode(selectedNode: NodeData) {
-        setSelectedNode(selectedNode);
+    function handleSelectedNode(newSelectedNode: NodeData) {
+        setSelectedNode(newSelectedNode);
+        const mapping = mappings.find(mapping => {
+            return (mapping.formID === newSelectedNode.component_key)
+         });
+        if(mapping == null) {
+            throw new Error("Could not find form for view box selected mapping!");
+        }
+        setSelectedMapping(mapping);
     }
 
     function handleEntryClear(entry: string) {
@@ -100,7 +118,8 @@ export function ViewBox({nodes, handleNewMapping}: ViewBoxProps) {
     }
     
     return (<div> <FormSelector nodes={nodeData} sendSelectedNode={handleSelectedNode}/>
-    <DataDisplay node={selectedNode} 
+    <DataDisplay node={selectedNode}
+                mapping={selectedMapping}
                 clearMapFunction={handleEntryClear}
                 addMapFunction={handleEntryNew}/>
     </div>)
