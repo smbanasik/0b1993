@@ -4,46 +4,18 @@ import styles from './prefill.module.css'
 
 interface ViewBoxProps {
     nodes: Array<Node>
-}
-interface NodeDisplayProps {
-    node: NodeData
+    handleNewMapping: Function
 }
 interface FormSelectorProps {
     nodes: Array<NodeData>,
     sendSelectedNode: Function
 }
 
-// TODO: need an on click function to remove mappings
-// TODO: need to save mappings somewhere
-
-// Return a list of text boxes with node data, as well as buttons
-// https://react.dev/reference/react-dom/components/textarea#controlling-a-text-area-with-a-state-variable
-function DataDisplay({node}: NodeDisplayProps) {
-
-    // Given a node, output its form contents as text boxes and a button next to it
-    const nodeEntries = Object.entries(node);
-
-    // TODO: button needs callback to clear mappings
-    const prefillItems = nodeEntries.map(entry=> 
-        <label className={styles.prefillEntry}>
-            <div className={styles.prefillEntryBox}
-                onClick={() =>console.log("IVE BEEN CLICKED" + entry[0])}>
-                {entry[0]}: 
-            </div>
-            <button>X</button>
-        </label>
-    )
-
-    // TODO: need double click on text area and that event to have a callback function
-    return (
-        <div>
-            Now editing form {node.name}
-            {prefillItems}
-        </div>
-    )
+interface NodeDisplayProps {
+    node: NodeData,
+    clearMapFunction: Function,
+    addMapFunction: Function,
 }
-
-// TODO: callback function for viewbox to recieve from form selector
 
 // Have a drop down to select which form to display
 function FormSelector({nodes, sendSelectedNode}: FormSelectorProps) {
@@ -76,8 +48,38 @@ function FormSelector({nodes, sendSelectedNode}: FormSelectorProps) {
     )
 }
 
+// Return a list of text boxes with node data, as well as buttons
+// https://react.dev/reference/react-dom/components/textarea#controlling-a-text-area-with-a-state-variable
+function DataDisplay({node, clearMapFunction, addMapFunction}: NodeDisplayProps) {
+
+    // Given a node, output its form contents as text boxes and a button next to it
+    const nodeEntries = Object.entries(node);
+
+    const prefillItems = nodeEntries.map(entry=> 
+        <div className={styles.prefillEntry} key={entry[0]}>
+            <label className={styles.prefillEntryBox}
+                onClick={e => {
+                    e.stopPropagation();
+                    addMapFunction(entry[0])
+                }}>
+                {entry[0]}: 
+            </label>
+            <button onClick={e => {
+                e.stopPropagation();
+                clearMapFunction(entry[0])
+            }}>X</button>
+        </div>
+    )
+    return (
+        <div>
+            Now editing form {node.name}
+            {prefillItems}
+        </div>
+    )
+}
+
 // Have a drop down to select different forms for the data display
-export function ViewBox({nodes}: ViewBoxProps) {
+export function ViewBox({nodes, handleNewMapping}: ViewBoxProps) {
     
     // For every node, access their data and extract their name
     const nodeData = nodes.map(node =>
@@ -88,8 +90,18 @@ export function ViewBox({nodes}: ViewBoxProps) {
     function handleSelectedNode(selectedNode: NodeData) {
         setSelectedNode(selectedNode);
     }
+
+    function handleEntryClear(entry: string) {
+        handleNewMapping(selectedNode.component_key, entry, true);
+    }
+
+    function handleEntryNew(entry: string) {
+        handleNewMapping(selectedNode.component_key, entry, false);
+    }
     
     return (<div> <FormSelector nodes={nodeData} sendSelectedNode={handleSelectedNode}/>
-    <DataDisplay node={selectedNode}/>
+    <DataDisplay node={selectedNode} 
+                clearMapFunction={handleEntryClear}
+                addMapFunction={handleEntryNew}/>
     </div>)
 }

@@ -46,34 +46,24 @@ export interface PrefillBoxProps {
     nodes: Array<Node>
 }
 
-interface Mapping {
-    downstreamElem: string,
-    upstreamElem: string,
-}
-
 interface FormMapping {
     formID: string,
-    mApprovalRequired: Mapping,
-    mApprovalRoles: Mapping,
-    mComponentID: Mapping,
-    mComponentKey: Mapping,
-    mComponentType: Mapping,
-    mID: Mapping,
-    mInputMapping: Mapping,
-    mName: Mapping
-    mPermittedRoles: Mapping,
-    mPrerequisites: Mapping
-    mSLADuration: Mapping
+    mApprovalRequired: string,
+    mApprovalRoles: string,
+    mComponentID: string,
+    mComponentKey: string,
+    mComponentType: string,
+    mID: string,
+    mInputMapping: string,
+    mName: string,
+    mPermittedRoles: string,
+    mPrerequisites: string,
+    mSLADuration: string,
 }
 // TODO:
 // PrefillBox will have: a view box, and an edit box
 // The view box will have: a drop down to select forms, a list of mappings
 // a way to clear a mapping, and a way to select a piece of data for the edit box
-
-// The form should only be able to prefill based on chains above it, for any form we need to traverse the DAG.
-export function handleNewMapping() {
-
-}
 
 // How is information passed:
 // Prefill box - List of mappings, a form to be edited
@@ -82,13 +72,22 @@ export function handleNewMapping() {
 
 export function PrefillBox({edges, nodes}: PrefillBoxProps) {
 
-
     const [formMappings, setFormMappings] = useState<Array<FormMapping>>();
     const [isView, setIsView] = useState<boolean>(true);
 
+    function handleNewMapping(formID: string, entry: string, clearMapping: boolean) {
+        if(clearMapping) {
+            console.log("Clearing mapping entry " + entry + " for form " + formID);
+        } else {
+            console.log("Adding mapping entry " + entry + " for form " + formID);
+        }
+
+    }
+
     return(
         <div className={styles.prefillBox}>
-            {isView ? <ViewBox nodes={nodes}/> : <p>I'm the edit box!</p>}
+            {isView ? <ViewBox nodes={nodes} handleNewMapping={handleNewMapping}/>
+            : <p>I'm the edit box!</p>}
         </div>
     );
 }
