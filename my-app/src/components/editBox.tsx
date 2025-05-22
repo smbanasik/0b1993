@@ -16,7 +16,7 @@ function traverseEdges(source: string, edges: Array<Edge>) {
 interface EditMappingsBoxProps {
     edges: Array<Edge>,
     forms: Array<Node>,
-    source: Node
+    source: string
 }
 
 
@@ -24,9 +24,14 @@ interface EditMappingsBoxProps {
 // When selected, we get their properties on the right that can be selected
 // Takes the edges, forms, and a source form
 // Outputs Formname.Property to parent
-function EditMappingsBox({}) {
+export function EditMappingsBox({edges, forms, source}: EditMappingsBoxProps) {
 
-    
+    // TODO: left column options
+    // TODO: right column display
+    // TODO: cancel button
 
 
+    return (
+        <p>Edit box!</p>
+    )
 }

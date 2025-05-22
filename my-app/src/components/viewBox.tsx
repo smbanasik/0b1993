@@ -88,6 +88,17 @@ function DataDisplay({node, mapping, clearMapFunction, addMapFunction}: NodeDisp
     )
 }
 
+function objectChanged(mappingOne: Record<string, unknown>, mappingTwo: Record<string, unknown>) {
+    const mapKeys = Object.keys(mappingOne);
+
+    for(const key of mapKeys) {
+        if(mappingOne[key] !== mappingTwo[key]) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // Have a drop down to select different forms for the data display
 export function ViewBox({nodes, handleNewMapping, mappings}: ViewBoxProps) {
     
@@ -97,6 +108,14 @@ export function ViewBox({nodes, handleNewMapping, mappings}: ViewBoxProps) {
     )
     const [selectedNode, setSelectedNode] = useState<NodeData>(nodes[0].data);
     const [selectedMapping, setSelectedMapping] = useState<FormMapping>(mappings[0]);
+
+    // Update selected mapping in case anything has changed
+    const mapping = mappings.find(mapping => mapping.formID === selectedMapping.formID)
+    if(mapping == null)
+        throw new Error("Mappings not aligned in view box.");
+    if(objectChanged({...mapping}, {...selectedMapping})) {
+        setSelectedMapping(mapping);
+    } 
 
     function handleSelectedNode(newSelectedNode: NodeData) {
         setSelectedNode(newSelectedNode);
@@ -116,7 +135,7 @@ export function ViewBox({nodes, handleNewMapping, mappings}: ViewBoxProps) {
     function handleEntryNew(entry: string) {
         handleNewMapping(selectedNode.component_key, entry, false);
     }
-    
+
     return (<div> <FormSelector nodes={nodeData} sendSelectedNode={handleSelectedNode}/>
     <DataDisplay node={selectedNode}
                 mapping={selectedMapping}

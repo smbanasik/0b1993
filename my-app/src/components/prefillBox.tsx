@@ -5,6 +5,7 @@
 import React, {useEffect, useState} from 'react';
 import { ViewBox } from './viewBox';
 import styles from './prefill.module.css'
+import { EditMappingsBox } from './editBox';
 
 export interface Edge {
     source: string,
@@ -51,7 +52,7 @@ export class FormMapping {
     constructor(ID:string) {
         this.formID = ID;
     }
-    formID: string = "";
+    formID?: string = "";
     approval_required?: string = "";
     approval_roles?: string = "";
     component_id?: string = "";
@@ -78,6 +79,8 @@ export function PrefillBox({edges, nodes}: PrefillBoxProps) {
 
     const [formMappings, setFormMappings] = useState<Array<FormMapping>>([]);
     const [isView, setIsView] = useState<boolean>(true);
+    const [newMappingSrc, setNewMappingSrc] = useState<string>("");
+    const [newMappingEntry, setNewMappingEntry] = useState<string>("");
 
     if(formMappings.length === 0) {
 
@@ -91,31 +94,65 @@ export function PrefillBox({edges, nodes}: PrefillBoxProps) {
 
     function handleNewMapping(formID: string, entry: string, clearMapping: boolean) {
 
-        const nodeMapping = formMappings.find(form => form.formID === formID);
+        const newMappings = [...formMappings]
+        const nodeMapping = newMappings.find(form => form.formID === formID);
 
         if(nodeMapping == null) {
             throw new Error("Could not find form requested by premapping view box!");
         }
-
-        let mappingEntries = Object.entries(nodeMapping);
         
         // With the entry found for our mapping data, we want to mutate this data
         // and either clear it or call the editBox with the form
 
         if(clearMapping) {
+            const mappingEntries = Object.entries(nodeMapping);
+
             mappingEntries.forEach(element => {
                 if(element[0] === entry) {
                     element[1] = "";
                 }
             });
+
+            const idx = newMappings.findIndex(form => form.formID === formID);
+
+            newMappings[idx] = Object.fromEntries(mappingEntries);
+
+            setFormMappings([...newMappings]);
+
         } else {
+            // If we aren't clearing, we go to the edit box.
+            setNewMappingSrc(formID);
+            setNewMappingEntry(entry);
             setIsView(false);
         }
 
     }
 
-    function handleNewMappingComplete() {
+    function handleNewMappingComplete(entry: string) {
+        // No matter what, we're always returning
         setIsView(true);
+        if(entry === "")
+            return;
+
+        const newMappings = [...formMappings]
+        const nodeMapping = newMappings.find(form => form.formID === newMappingSrc);
+        if(nodeMapping == null) {
+            throw new Error("Could not find form required by new mapping completion!");
+        }
+
+        const mappingEntries = Object.entries(nodeMapping);
+
+        mappingEntries.forEach(element => {
+            if(element[0] === newMappingEntry) {
+                element[1] = entry;
+            }
+        });
+
+        const idx = newMappings.findIndex(form => form.formID === newMappingSrc);
+
+        newMappings[idx] = Object.fromEntries(mappingEntries);
+
+        setFormMappings([...newMappings]);
     }
 
     return(
@@ -125,7 +162,11 @@ export function PrefillBox({edges, nodes}: PrefillBoxProps) {
             handleNewMapping={handleNewMapping}
             mappings={formMappings}
             />
-            : <p>I'm the edit box!</p>}
+            : <EditMappingsBox
+                edges={edges}
+                forms={nodes}
+                source={newMappingSrc} />
+            }
         </div>
     );
 }
