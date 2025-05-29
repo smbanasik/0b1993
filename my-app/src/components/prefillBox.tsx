@@ -87,7 +87,17 @@ export function PrefillBox({edges, nodes}: PrefillBoxProps) {
         const initMappings = nodes.map((node, i) => 
             ({
                 formID: node.id,
-                id: "Test " + i
+                id: "",
+                approval_required: "",
+                approval_roles: "",
+                component_id: "",
+                component_key: "",
+                component_type: "",
+                input_mapping: "",
+                name: "",
+                permitted_roles: "",
+                prerequisites: "",
+                sla_duration: "",
             }));
         setFormMappings(prev => [...prev, ...initMappings]);
     }
@@ -151,6 +161,8 @@ export function PrefillBox({edges, nodes}: PrefillBoxProps) {
         const idx = newMappings.findIndex(form => form.formID === newMappingSrc);
 
         newMappings[idx] = Object.fromEntries(mappingEntries);
+        
+        console.log(newMappings);
 
         setFormMappings([...newMappings]);
     }
@@ -158,9 +170,10 @@ export function PrefillBox({edges, nodes}: PrefillBoxProps) {
     return(
         <div className={styles.prefillBox}>
             {isView ? <ViewBox 
-            nodes={nodes} 
+            nodes={nodes}
             handleNewMapping={handleNewMapping}
             mappings={formMappings}
+            lastNode={newMappingSrc}
             />
             : <EditMappingsBox
                 edges={edges}

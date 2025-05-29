@@ -1,9 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, {Fragment, useEffect, useState} from 'react';
 import { Edge, Node } from "./prefillBox"
 import styles from './prefill.module.css'
-
-
-
 
 // Returns direct and transietive mappings (so, anything upstream of it)
 function traverseEdges(source: string, edges: Array<Edge>) {
@@ -46,13 +43,6 @@ function getNodes(keyNames: Array<string>, forms: Array<Node>) {
     return validNodes;
 }
 
-interface EditMappingsBoxProps {
-    edges: Array<Edge>,
-    forms: Array<Node>,
-    source: string,
-    handleCompletionCallback: Function,
-}
-
 interface ValidFormsBoxProps {
     forms: Array<Node>
     callback: Function
@@ -62,6 +52,7 @@ function ListValidForms({forms, callback}: ValidFormsBoxProps) {
 
     const formNames = forms.map(form => 
         <label 
+        key = {form.id}
         className = {styles.prefillEditBoxEntry}
         onClick = {e => {
             e.stopPropagation();
@@ -84,16 +75,40 @@ interface ListMappingsProps {
 // Going to be very similar to display data
 function ListMappings({selectedForm, callback}: ListMappingsProps) {
 
+    // Given a selected form, display all of its stuff
+    const nodeEntries = Object.entries(selectedForm.data);
+
+    const prefillItems = nodeEntries.map(entry=> {
+        return (
+            <div key={entry[0]}>
+            <label className={styles.prefillEditBoxEntry}
+                onClick={e => {
+                    e.stopPropagation();
+                    callback(entry[0]);
+                }}>
+                {entry[0]}
+            </label>
+            <br/>
+            </div>
+        )
+    }
+    )
+
     return (
         <div>
-            <p>Mapping one</p>
-            <p>Mapping two</p>
+            Selected Form: {selectedForm.data.name}
+            <br/>
+            {prefillItems}
         </div>
     )
 }
 
-// What's left? traverseEdges, the UI, then sending that info back.
-
+interface EditMappingsBoxProps {
+    edges: Array<Edge>,
+    forms: Array<Node>,
+    source: string,
+    handleCompletionCallback: Function,
+}
 
 // When selected, we get their properties on the right that can be selected
 // Takes the edges, forms, and a source form
@@ -110,7 +125,7 @@ export function EditMappingsBox({edges, forms, source, handleCompletionCallback}
 
     function getSelectedMapping(mapping : string) {
         setSelectedFormKey("");
-        handleCompletionCallback(mapping);
+        handleCompletionCallback(selectedForm.data.name + "." + mapping);
     }
 
     const validForms = traverseEdges(source, edges);

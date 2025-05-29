@@ -8,6 +8,7 @@ interface ViewBoxProps {
     nodes: Array<Node>
     handleNewMapping: Function
     mappings: Array<FormMapping>
+    lastNode: string
 }
 interface FormSelectorProps {
     nodes: Array<NodeData>,
@@ -100,14 +101,37 @@ function objectChanged(mappingOne: Record<string, unknown>, mappingTwo: Record<s
 }
 
 // Have a drop down to select different forms for the data display
-export function ViewBox({nodes, handleNewMapping, mappings}: ViewBoxProps) {
+export function ViewBox({nodes, handleNewMapping, mappings, lastNode}: ViewBoxProps) {
     
     // For every node, access their data and extract their name
     const nodeData = nodes.map(node =>
         node.data
     )
-    const [selectedNode, setSelectedNode] = useState<NodeData>(nodes[0].data);
-    const [selectedMapping, setSelectedMapping] = useState<FormMapping>(mappings[0]);
+
+    const initialNode = (lastNode === "" ? nodes[0].data : 
+        () => {
+            for(let idx: number = 0; idx < nodes.length; idx++) {
+                if(lastNode === nodes[idx].id) {
+                    return nodes[idx].data;
+                }
+            }
+            return nodes[0].data;
+        }
+    )
+    const inialMappings = (lastNode === "" ? mappings[0] : 
+        () => {
+            for(let idx: number = 0; idx < mappings.length; idx++) {
+                if(lastNode === mappings[idx].formID)
+                    return mappings[idx];
+            }
+            return mappings[0];
+        }
+    )
+
+    // TODO: always defaults to form F when we cancel or bind a mapping,
+    // need to change in parent component and here.
+    const [selectedNode, setSelectedNode] = useState<NodeData>(initialNode);
+    const [selectedMapping, setSelectedMapping] = useState<FormMapping>(inialMappings);
 
     // Update selected mapping in case anything has changed
     const mapping = mappings.find(mapping => mapping.formID === selectedMapping.formID)
