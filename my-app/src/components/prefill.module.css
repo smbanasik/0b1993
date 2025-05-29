@@ -39,3 +39,25 @@ Text: white
     padding: 5px 5px 5px 5px;
     margin: 20px 20px 40px 20px;
 }
+
+.prefillEditBox {
+    border: 3px solid #2F2235;
+    margin: 10px 5px 10px 5px;
+    padding: 5px 5px 5px 5px;
+    background-color: #8b8d8b;
+}
+
+.prefillEditBoxColumns {
+    display: flex;
+    align-items: center;
+    resize: none;
+}
+.prefillEditBoxColumnLeft {
+    border: 3px solid #2F2235;
+    display: grid;
+    padding: 0px 15px 0px 0px;
+}
+
+.prefillEditBoxEntry:hover {
+    background-color: #3F3244;
+}

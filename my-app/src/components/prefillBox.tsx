@@ -165,7 +165,8 @@ export function PrefillBox({edges, nodes}: PrefillBoxProps) {
             : <EditMappingsBox
                 edges={edges}
                 forms={nodes}
-                source={newMappingSrc} />
+                source={newMappingSrc}
+                handleCompletionCallback={handleNewMappingComplete} />
             }
         </div>
     );
