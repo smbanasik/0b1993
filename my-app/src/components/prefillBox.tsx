@@ -43,8 +43,9 @@ export interface Node {
 }
 
 export interface PrefillBoxProps {
-    edges: Array<Edge>
-    nodes: Array<Node>
+    edges: Array<Edge>,
+    nodes: Array<Node>,
+    globalData: Array<Node>
 }
 
 export class FormMapping {
@@ -65,17 +66,8 @@ export class FormMapping {
     prerequisites?: string = "";
     sla_duration?: string = "";
 }
-// TODO:
-// PrefillBox will have: a view box, and an edit box
-// The view box will have: a drop down to select forms, a list of mappings
-// a way to clear a mapping, and a way to select a piece of data for the edit box
 
-// How is information passed:
-// Prefill box - List of mappings, a form to be edited
-// View box - sends a property and the form associated with it
-// Edit box - returns the selection that the user made
-
-export function PrefillBox({edges, nodes}: PrefillBoxProps) {
+export function PrefillBox({edges, nodes, globalData}: PrefillBoxProps) {
 
     const [formMappings, setFormMappings] = useState<Array<FormMapping>>([]);
     const [isView, setIsView] = useState<boolean>(true);
@@ -179,6 +171,7 @@ export function PrefillBox({edges, nodes}: PrefillBoxProps) {
                 edges={edges}
                 forms={nodes}
                 source={newMappingSrc}
+                globalData={globalData}
                 handleCompletionCallback={handleNewMappingComplete} />
             }
         </div>

@@ -108,12 +108,13 @@ interface EditMappingsBoxProps {
     forms: Array<Node>,
     source: string,
     handleCompletionCallback: Function,
+    globalData: Array<Node>,
 }
 
 // When selected, we get their properties on the right that can be selected
 // Takes the edges, forms, and a source form
 // Outputs Formname.Property to parent
-export function EditMappingsBox({edges, forms, source, handleCompletionCallback}: EditMappingsBoxProps) {
+export function EditMappingsBox({edges, forms, source, globalData, handleCompletionCallback}: EditMappingsBoxProps) {
 
     const [selectedFormKey, setSelectedFormKey] = useState<string>("");
     const [selectedForm, setSelectedForm] = useState<Node>(forms[0]);
@@ -129,7 +130,7 @@ export function EditMappingsBox({edges, forms, source, handleCompletionCallback}
     }
 
     const validForms = traverseEdges(source, edges);
-    const validNodes = getNodes(validForms, forms);
+    const validNodes = [...getNodes(validForms, forms), ...globalData];
 
     return (
         <div className={styles.prefillEditBox}>

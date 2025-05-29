@@ -22,7 +22,7 @@ interface FormData {
 function App() {
   const [formData, setFormData] = useState<FormData | null>(null);
   const [loading, setLoading] = useState(true);
-  let prefillProps: PrefillBoxProps = {edges: [], nodes: []};
+  let prefillProps: PrefillBoxProps = {edges: [], nodes: [], globalData: []};
   
   useEffect(() => {
     async function getFormData() {
@@ -51,7 +51,7 @@ function App() {
     if(!formData) {
       console.log("Form data not found!");
     } else {
-      prefillProps = {edges: formData.edges, nodes: formData.nodes};
+      prefillProps = {edges: formData.edges, nodes: formData.nodes, globalData: []};
     }
   }
 
@@ -72,7 +72,9 @@ function App() {
           
         </a>
         {loading? (<p>Loading...</p>) 
-        : (<PrefillBox edges={prefillProps.edges}nodes={prefillProps.nodes}/>)}
+        : (<PrefillBox edges={prefillProps.edges}
+        nodes={prefillProps.nodes}
+        globalData={prefillProps.globalData}/>)}
       </header>
     </div>
   );
