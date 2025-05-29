@@ -6,7 +6,7 @@ Next, cd to `my-app` and type `npm start`. If you would like to change the port,
 
 ## Code Architecture
 
-The project's components are found under `./src/components`. The main component is found in `prefillBox.tsx` which acts as a parent to the subcomponents. It is fed data through the `App.tsx`, which makes the API request to the test server and acquires data. Additional data sources (such as for requirement 3) should be added through the global section, which is the same format as the nodes.
+Once in the `my-app` directory, the project's components are found under `./src/components`. The main component is found in `prefillBox.tsx` which acts as a parent to the subcomponents. It is fed data through the `App.tsx`, which makes the API request to the test server and acquires data. Additional data sources (such as for requirement 3) should be added through the global section, which is the same format as the nodes.
 
 The PrefillBox keeps track of state between the viewing and editing of mappings, as well as keeps track of the mappings themselves. Any changes to the interface between the subcomponents should start here.
 
