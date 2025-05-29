@@ -39,7 +39,6 @@ function App() {
       const response = await fetch(url, {method: 'GET'});
       if(response.status === 200) {
       const data: FormData = await response.json();
-      console.log(data);
       setFormData(data);
       setLoading(false);
       }

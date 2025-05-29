@@ -35,8 +35,8 @@ function getNodes(keyNames: Array<string>, forms: Array<Node>) {
 
     let validNodes : Array<Node> = [];
     for(let name: number = 0; name < keyNames.length; name++) {
-        for(let form: number = 0; name < forms.length; form++) {
-            
+        for(let form: number = 0; form < forms.length; form++) {
+
             if(keyNames[name] === forms[form].id) {
                 validNodes.push(forms[form]);
             }
@@ -55,12 +55,18 @@ interface EditMappingsBoxProps {
 
 interface ValidFormsBoxProps {
     forms: Array<Node>
+    callback: Function
 }
 
-function ListValidForms({forms}: ValidFormsBoxProps) {
+function ListValidForms({forms, callback}: ValidFormsBoxProps) {
 
     const formNames = forms.map(form => 
-        <label className = {styles.prefillEditBoxEntry}>{form.data.name}</label>
+        <label 
+        className = {styles.prefillEditBoxEntry}
+        onClick = {e => {
+            e.stopPropagation();
+            callback(form);
+        }}>{form.data.name}</label>
     )
 
     return (
@@ -72,36 +78,54 @@ function ListValidForms({forms}: ValidFormsBoxProps) {
 
 interface ListMappingsProps {
     selectedForm: Node
+    callback: Function
 }
 
-function ListMappings({selectedForm}: ListMappingsProps) {
+// Going to be very similar to display data
+function ListMappings({selectedForm, callback}: ListMappingsProps) {
 
-    
+    return (
+        <div>
+            <p>Mapping one</p>
+            <p>Mapping two</p>
+        </div>
+    )
 }
 
 // What's left? traverseEdges, the UI, then sending that info back.
 
 
-// TODO: a list of selectable forms on the left that can be scrolled,
 // When selected, we get their properties on the right that can be selected
 // Takes the edges, forms, and a source form
 // Outputs Formname.Property to parent
 export function EditMappingsBox({edges, forms, source, handleCompletionCallback}: EditMappingsBoxProps) {
 
-    // TODO: left column options
-    // TODO: right column display
-    // TODO: cancel button
+    const [selectedFormKey, setSelectedFormKey] = useState<string>("");
+    const [selectedForm, setSelectedForm] = useState<Node>(forms[0]);
+
+    function getSelectedForm(form: Node) {
+        setSelectedFormKey(form.id)
+        setSelectedForm(form)
+    }
+
+    function getSelectedMapping(mapping : string) {
+        setSelectedFormKey("");
+        handleCompletionCallback(mapping);
+    }
 
     const validForms = traverseEdges(source, edges);
     const validNodes = getNodes(validForms, forms);
-
 
     return (
         <div className={styles.prefillEditBox}>
             <div className={styles.prefillEditBoxColumns}>
 
-            <ListValidForms forms={validNodes}/>
-            <p>Test</p>
+            <ListValidForms forms={validNodes}
+                callback={getSelectedForm}/>
+            {(selectedFormKey === "") 
+            ? <p>Select a form to the left.</p> 
+            : <ListMappings selectedForm={selectedForm}
+            callback={getSelectedMapping}/>}
             </div>
             <button onClick={e => {
                     e.stopPropagation();
